@@ -157,3 +157,52 @@ Provides backup and recovery capabilities for Kubernetes workloads.
 **External Object Storage:**  
 This would be external to Kubernetes for storing backup items - databases, etcd, pvc, etc.
 MinIO Cluster is a good option for this, in the absence of an existing solution.
+
+---
+
+### 3. Automate Infrastructure Deployment
+
+#### **Infrastructure Automation:**
+
+- **Operating System:**
+  - **MAAS:**  
+    I would use MAAS to provision the physical servers. With MAAS, I can have
+        - Remote Power Control
+        - PXE booting and DHCP
+        - OS Imaging and Deployment
+        - REST API access (which I can call from a build tool like Jenkins)
+  - **Cloud-init:**  
+    I would leverage Cloud-init for initial server configuration. This would handle network settings and SSH keys on the first boot.
+  - **Ansible:**  
+    I would use Ansible to automate configuration management tasks across all servers.
+
+- **Kubernetes Deployment (RKE2):**
+  - **Ansible Role:**  
+    I would deploy Kubernetes (RKE2) using an Ansible Role and Playbook.
+    I have provided a sample Ansible Role in the code_snippet section of this repo.
+  - **Dynamic Inventory:**  
+    I would creat a Python script for dynamic inventory generation from the MAAS API.
+    I would reserve a certain range of IP's from the DHCP pool for the Kubernetes Control Plane, MinioIO Cluster and the rest can be used for the Kubernetes Workers.
+    I have provided a sample Python Script for Dynamic Invenotry in the code_snippet section of this repo.
+
+- **Additional Kubernetes Deployment Components:**
+  - **Helm Charts and Manifests:**  
+    I would use Helm charts and manifests to deploy Additional Kubernetes applications, like Longhorn, Nginx Ingress Controller, etc.
+    These would be included as Tasks in the Ansible Role.
+  - **Harbor:**  
+    I would set up Harbor as an On-Premise Container registry, so as to support Air-Gapped and Offline Installations
+
+- **Single Click Installation (Jenkins Pipeline):**
+  - **Jenkins Pipeline:**  
+    I would create a Jenkins Pipeline to Automate and stitch the various stages of the Infrastructure deployment together, and enable a Single-Click Installation.
+
+    Jenkins would leverage the MAAS cli to connect to the MAAS REST API to remotely trigger MAAS activities.
+    - **Jenkins Pipeline Stages:**
+      - **MAAS:** Provision servers.
+      - **Hardware Test with MAAS cli:** Validate server hardware.
+      - **Kubernetes Pre-Deployment Test with Ansible:** Verify pre-requisites for Kubernetes.
+      - **Kubernetes Deployment with Ansible:** Execute the Kubernetes setup.
+      - **Kubernetes Post-Deployment Test with Ansible:** Confirm the successful deployment of Kubernetes.
+      - **Additional Components Deployment with Ansible:** Deploy additional Kubernetes components with Helm charts and Manifests
+
+    I have provided a sample Jenkins Pipeline in the code_snippet section of this repo.
