@@ -52,3 +52,108 @@ I would use the Ubuntu Linux Distro because:
 - Security: Includes built-in security features like AppArmor.
 - Ease of Use: Simple package management with APT for easy installation and updates.
 - Cloud and Server Optimized: Optimized for cloud platforms and physical servers.
+
+---
+
+### 2. Choose the Orchestration Technology
+
+I would use **Kubernetes** as the Orchestration Technology.
+There are a number of On-Premise Kubernetes Distributions to choose from Vanilla K8s, RKE2, OpenShift, Tanzu.
+
+I would choose RKE2 distribution because:
+
+- Simplified deployment and management
+- Hardened images  
+- Built-in security features  
+  - CIS Kubernetes benchmark compliance  
+  - SELinux and container runtime security out-of-the-box
+- Free
+
+### Additional Components to make Production-Ready Kubernetes Platform
+
+- Longhorn
+- Nginx Ingress Controller
+- Vault
+- CertManager
+- Spire
+- Istio
+- CloudNativePG
+- ArgoCD
+- KEDA (Kubernetes Event-driven Autoscaler)
+- Kube Prometheus Stack
+- Elastic Operator
+- OpenTelemetry Collector
+- Kiali
+- Velero
+- External Object Storage
+
+
+**Longhorn:**  
+A cloud-native, distributed block storage solution for creating and managing persistent volumes in Kubernetes.
+Longhorn creates a default storage class, which has 2 replicas for redundancy and high-availability.
+
+  - **Storage Class for Distributed Applications:**
+  For Distributed Applications which already have a built in replication mechanism - postgresql and other databases - I would create a custom storage class, having a single replica with data locality. This would offer a higher IOPS and lower latency performance. Illustration below
+
+    ```
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      annotations:
+        storageclass.kubernetes.io/is-default-class: "false"
+      name: longhorn-local
+    parameters:
+      dataLocality: "strict-local"
+      fromBackup: ""
+      fsType: ext4
+      numberOfReplicas: "1"
+      staleReplicaTimeout: "30"
+    provisioner: driver.longhorn.io
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    allowVolumeExpansion: true
+
+    ```
+
+**Nginx Ingress Controller:**  
+Exposes microservices to external users securely by managing HTTP and HTTPS traffic.
+
+**Vault:**  
+Manages secrets, storing credentials and sensitive data securely. Configured as a Certificate Authority (CA) to issue TLS certificates
+
+**CertManager:**  
+Automates the management of TLS certificates for secure communication within the cluster. Integrates with Vault as the Issuer for TLS certificates.
+
+**Spire:**  
+Handles identity management and the issuance of SPIFFE IDs for microservices.
+
+**Istio:**  
+A service mesh that provides secure and efficient traffic management between microservices.
+
+**CloudNativePG:**  
+A PostgreSQL operator for Kubernetes that automates the deployment and management of PostgreSQL databases.
+
+**ArgoCD:**  
+A GitOps tool for continuous deployment, enabling declarative management of Kubernetes resources.
+
+**KEDA (Kubernetes Event-driven Autoscaler):**  
+Facilitates event-based scaling of microservices based on workload spikes.
+
+**Kube Prometheus Stack:**  
+Monitors the Kubernetes cluster with Prometheus and Grafana, ensuring observability and metrics collection.
+
+**Elastic Operator:**  
+Deploys and manages an Elasticsearch cluster for log aggregation and analysis.
+
+**OpenTelemetry Collector:**  
+Collects distributed traces and metrics for monitoring and observability of microservices.
+
+**Kiali:**  
+Visualizes the service mesh topology, traffic, and performance metrics within Istio.
+
+**Velero:**  
+Provides backup and recovery capabilities for Kubernetes workloads.
+
+**External Object Storage:**  
+This would be external to Kubernetes for storing backup items - databases, etcd, pvc, etc.
+MinIO Cluster is a good option for this, in the absence of an existing solution.
