@@ -1,0 +1,22 @@
+---
+# tasks file for rke
+
+- include_tasks: master1.yml
+  when: 
+    - '"master" in group_names'
+    - ansible_play_hosts.index(inventory_hostname) == 1
+  tags:
+    - master1
+
+- include_tasks: master2-3.yml
+  when: 
+    - '"master" in group_names'
+    - ansible_play_hosts.index(inventory_hostname) == 2 or ansible_play_hosts.index(inventory_hostname) == 3
+  tags:
+    - master2-3
+
+- include_tasks: workers.yml
+  when: 
+    - '"worker" in group_names'
+  tags:
+    - workers

@@ -1,0 +1,12 @@
+server: https://{{ kube_vip_dns }}:9345
+token: {{ token }}
+tls-san:
+{% if 'rke-master2' in inventory_hostname %}
+  - rke-master2
+{% elif 'rke-master3' in inventory_hostname %}
+  - rke-master3
+{% endif %}
+  - kubeapi-rke
+disable: rke2-ingress-nginx
+node-taint:
+  - "node-role.kubernetes.io/control-plane:NoSchedule"

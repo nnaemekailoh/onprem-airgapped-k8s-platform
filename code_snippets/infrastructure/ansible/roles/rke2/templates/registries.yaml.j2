@@ -1,0 +1,33 @@
+mirrors:
+  {{ container_registry }}:
+    endpoint:
+      - "https://{{ container_registry }}"
+
+  docker.io:
+    endpoint:
+      - "https://{{ container_registry }}"
+
+  ghcr.io:
+    endpoint:
+      - "https://{{ container_registry }}"
+
+  quay.io:
+    endpoint:
+      - "https://{{ container_registry }}"
+
+  registry.k8s.io:
+    endpoint:
+      - "https://{{ container_registry }}"
+
+  k8s.gcr.io:
+    endpoint:
+      - "https://{{ container_registry }}"
+
+configs:
+  "{{ container_registry }}":
+    auth:
+      username: "{{ registry_username }}" # this is the registry username
+      password: "{{ registry_password }}" # this is the registry password
+
+    tls:
+      insecure_skip_verify: true

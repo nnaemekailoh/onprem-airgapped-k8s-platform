@@ -1,0 +1,9 @@
+---
+
+- name: Restart RKE service
+  service:
+    name: rke2-server
+    state: restarted
+    enabled: yes
+  tags:
+    - master1

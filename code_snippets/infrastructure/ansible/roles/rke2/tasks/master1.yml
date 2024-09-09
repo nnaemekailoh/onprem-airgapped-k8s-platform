@@ -1,0 +1,102 @@
+---
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
+  loop:
+    - "/etc/rancher/rke2/" 
+    - "/var/lib/rancher/rke2/agent/images/"
+    - "/root/rke2-artifacts/"
+  tags:
+    - master1
+
+- name: Copy Master1 Config file
+  template:
+    src: master1.cfg.j2
+    dest: "/etc/rancher/rke2/config.yaml"
+  tags:
+    - master1
+
+- name: Copy RKE2 Artifacts
+  copy:
+    src: "{{ item }}"
+    dest: "/root/rke2-artifacts/{{ item }}"
+  loop: "{{ rke2_artifacts }}"
+  tags:
+    - master1
+
+- name: Copy install.sh
+  copy:
+    src: install.sh
+    dest: "/root/rke2-artifacts/install.sh"
+    mode: 0755
+  tags:
+    - master1
+
+- name: Copy Network Manager config
+  copy:
+    src: rke2-canal.conf
+    dest: "/etc/NetworkManager/conf.d/rke2-canal.conf"
+    mode: 0644
+  tags:
+    - master1
+
+- name: Restart Network Manager service
+  service:
+    name: NetworkManager
+    state: restarted
+  tags:
+    - master1
+
+- name: Copy registries.yml to configure K8 private registry for 
+  template:
+    src: registries.yaml.j2
+    dest: "{{ rke_config_dir }}/registries.yaml"
+    owner: root
+    group: root
+    force: yes
+    mode: 0644
+  tags:
+   - master1
+   
+- name: Run install.sh
+  shell: INSTALL_RKE2_ARTIFACT_PATH=/root/rke2-artifacts INSTALL_RKE2_TYPE=server /root/rke2-artifacts/install.sh
+  tags:
+    - master1
+
+- name: Start RKE Service
+  service:
+    name: rke2-server
+    state: started
+    enabled: yes
+  tags:
+    - master1
+
+- name: Copy Utilities to System PATH
+  copy:
+    src: "/var/lib/rancher/rke2/bin/{{ item }}"
+    dest: "/usr/bin/{{ item }}"
+    remote_src: yes
+    mode: 0755
+  loop:
+    - kubectl
+    - crictl
+    - ctr
+  tags:
+    - master1
+
+
+- name: Copy kubevip yamls
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ rke_manifests_dir }}/{{ item }}"
+  loop:
+    - kubevip-rbac.yml
+    - kubevip.yml
+  tags:
+    - master1

@@ -1,0 +1,7 @@
+token: {{ token }}
+tls-san:
+  - rke-master1
+  - kubeapi-rke
+disable: rke2-ingress-nginx
+node-taint:
+  - "node-role.kubernetes.io/control-plane:NoSchedule"

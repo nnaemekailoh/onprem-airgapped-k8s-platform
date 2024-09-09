@@ -1,0 +1,22 @@
+---
+
+- name: Install RKE2
+  hosts: all
+  tasks:  
+    - name: Master1
+      include_role: 
+        name: roles/rke2
+      tags:
+        - master1
+
+    - name: Master2-3
+      include_role: 
+        name: roles/rke2
+      tags:
+        - master2-3
+
+    - name: Workers
+      include_role: 
+        name: roles/rke2
+      tags:
+        - workers
