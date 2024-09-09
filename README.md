@@ -179,11 +179,16 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
 - **Kubernetes Deployment (RKE2):**
   - **Ansible Role:**  
     I would deploy Kubernetes (RKE2) using an Ansible Role and Playbook.
-    I have provided a sample Ansible Role in the code_snippet section of this repo.
+    I have provided a sample Ansible Role in the code_snippet section of this repo, here [ansible_snippet](./code_snippets/infrastructure/ansible/)
   - **Dynamic Inventory:**  
     I would creat a Python script for dynamic inventory generation from the MAAS API.
-    I would reserve a certain range of IP's from the DHCP pool for the Kubernetes Control Plane and the rest can be used for the Kubernetes Workers.
-    I have provided a sample Python Script for Dynamic Invenotry in the code_snippet section of this repo.
+
+      - Control Plane nodes:
+    I would reserve a certain range of IP's from the DHCP pool for the Kubernetes Control Plane nodes
+      - Worker nodes
+    The rest can be used for the Kubernetes Worker nodes.
+
+    I have provided a sample Python Script for Dynamic Invenotry in the code_snippet section of this repo, here [dynamic_inventory_snippet](./code_snippets/infrastructure/ansible/inventory.py)
 
 - **Additional Kubernetes Deployment Components:**
   - **Helm Charts and Manifests:**  
