@@ -182,7 +182,7 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
     I have provided a sample Ansible Role in the code_snippet section of this repo.
   - **Dynamic Inventory:**  
     I would creat a Python script for dynamic inventory generation from the MAAS API.
-    I would reserve a certain range of IP's from the DHCP pool for the Kubernetes Control Plane, MinioIO Cluster and the rest can be used for the Kubernetes Workers.
+    I would reserve a certain range of IP's from the DHCP pool for the Kubernetes Control Plane and the rest can be used for the Kubernetes Workers.
     I have provided a sample Python Script for Dynamic Invenotry in the code_snippet section of this repo.
 
 - **Additional Kubernetes Deployment Components:**
