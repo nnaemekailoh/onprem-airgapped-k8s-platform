@@ -1,0 +1,98 @@
+pipeline {
+    agent any
+
+    environment {
+        KUBECONFIG = '/path/to/kubeconfig/on/jenkins/server'  // Update this to the correct path
+    }
+
+    stages {
+        stage('MAAS: Provision Servers') {
+            steps {
+                script {
+                    echo 'Provisioning on-prem servers using MAAS...'
+                    sh '''
+                    # Provision servers using MAAS CLI or API
+                    maas <profile> machine acquire
+                    maas <profile> machine deploy <machine_id>
+                    '''
+                }
+            }
+        }
+
+        stage('Hardware Test with MAAS CLI: Validate Server Hardware') {
+            steps {
+                script {
+                    echo 'Validating server hardware using MAAS CLI...'
+                    sh '''
+                    # Run hardware diagnostics using MAAS
+                    maas <profile> machine check <machine_id>
+                    '''
+                }
+            }
+        }
+
+        stage('Kubernetes Pre-Deployment Test with Ansible') {
+            steps {
+                script {
+                    echo 'Running pre-deployment checks using Ansible...'
+                    sh '''
+                    # Run pre-deployment checks using Ansible
+                    ansible-playbook -i inventory.py playbooks/pre-deployment-check.yml
+                    '''
+                }
+            }
+        }
+
+        stage('Kubernetes Deployment with Ansible: Install RKE2') {
+            steps {
+                script {
+                    echo 'Deploying RKE2 Kubernetes using Ansible...'
+                    sh '''
+                    # Deploy RKE2 using Ansible
+                    ansible-playbook -i inventory.py playbooks/deploy-rke2.yml
+                    '''
+                }
+            }
+        }
+
+        stage('Kubernetes Post-Deployment Test with Ansible') {
+            steps {
+                script {
+                    echo 'Validating Kubernetes deployment using Ansible...'
+                    sh '''
+                    # Run post-deployment validation with Ansible
+                    ansible-playbook -i inventory.py playbooks/post-deployment-check.yml
+                    '''
+                }
+            }
+        }
+
+        stage('Additional Components Deployment with Ansible') {
+            steps {
+                script {
+                    echo 'Deploying additional Kubernetes components using Ansible...'
+                    // Use Ansible for Helm-based deployments (Longhorn, Ingress, Harbor, etc.)
+                    sh '''
+                    ansible-playbook -i inventory.py playbooks/deploy-k8s-components.yml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                echo 'Pipeline completed successfully!'
+                // Optional: Test cluster by retrieving pods and services
+                sh '''
+                kubectl --kubeconfig=$KUBECONFIG get nodes
+                kubectl --kubeconfig=$KUBECONFIG get pods --all-namespaces
+                '''
+            }
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}

@@ -210,4 +210,4 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
       - **Kubernetes Post-Deployment Test with Ansible:** Confirm the successful deployment of Kubernetes.
       - **Additional Components Deployment with Ansible:** Deploy additional Kubernetes components with Helm charts and Manifests
 
-    I have provided a sample Jenkins Pipeline in the code_snippet section of this repo.
+    I have provided a sample Jenkins Pipeline in the code_snippet section of this repo, here [jenkinsfile](./code_snippets/infrastructure/jenkins/Jenkinsfile)
