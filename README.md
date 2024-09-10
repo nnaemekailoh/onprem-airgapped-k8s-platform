@@ -71,6 +71,7 @@ I would choose RKE2 distribution because:
 
 ### Additional Components to make Production-Ready Kubernetes Platform
 
+- Network CNI
 - Longhorn
 - Nginx Ingress Controller
 - Vault
@@ -87,6 +88,11 @@ I would choose RKE2 distribution because:
 - Velero
 - External Object Storage
 
+
+
+**Network CNI:**  
+Between Flannel, Calico and Cilium. Calico has a good balance of scalability and security.
+But **Cilium** using eBPF has High Performance, Advanced Security and cutting-edge features.
 
 **Longhorn:**  
 A cloud-native, distributed block storage solution for creating and managing persistent volumes in Kubernetes.
@@ -166,11 +172,12 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
 
 - **Operating System:**
   - **MAAS:**  
-    I would use MAAS to provision the physical servers. With MAAS, I can have
-        - Remote Power Control
-        - PXE booting and DHCP
-        - OS Imaging and Deployment
-        - REST API access (which I can call from a build tool like Jenkins)
+    I would use MAAS to provision the physical servers.
+    With MAAS, I can have:
+      - Remote Power Control
+      - PXE booting and DHCP
+      - OS Imaging and Deployment
+      - REST API access (which I can call from a build tool like Jenkins)
   - **Cloud-init:**  
     I would leverage Cloud-init for initial server configuration. This would handle network settings and SSH keys on the first boot.
   - **Ansible:**  
@@ -307,13 +314,15 @@ After deployment, I use Ansible to:
 
 ---
 
-## 7. Monitoring Approach 
+### 7. Monitoring Approach 
 
 I would adopt a wholistic Observability and Monitoring approach for the solution, covering:
 
 - Metrics
 - Logs
 - Traces
+
+#### Observability and Monitoring From Within Kubernetes
 
 #### 7.1. **Metrics with Prometheus Stack**  
    - **Node metrics**: Monitor CPU, memory, and disk usage to ensure nodes are functioning efficiently.  
@@ -330,15 +339,22 @@ I would adopt a wholistic Observability and Monitoring approach for the solution
    - **Latency**: Track delays in processing requests to identify performance bottlenecks.  
    - **Error rates**: Monitor the frequency of errors to detect and address issues impacting the application's reliability.
 
-#### 7.4. **Monitoring From Outside Kubernetes using Nagios**  
+
+#### Monitoring the Nodes From Outside Kubernetes
+
+#### 7.4. **Metrics with Nagios**  
    - **Node metrics**:  
      - **CPU**: Track CPU usage to detect over-utilization.  
      - **Memory**: Monitor memory usage to avoid memory leaks or overuse.  
      - **Storage**: Ensure there is sufficient disk space to prevent failures.  
    - **Endpoints**: Check the availability and performance of critical endpoints.
 
+
+#### Alerting (Email, SMS, Slack, etc)
+
 #### 7.5. **Alerting**  
    - **Critical alerts**: Set up notifications for critical conditions or thresholds to enable prompt response to issues.
+
 
 #### 7.6. **List of Monitoring Tools**  
    - **Prometheus stack**: Provides powerful metrics collection and querying capabilities.  
