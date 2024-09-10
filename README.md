@@ -275,3 +275,32 @@ The following strategies would be implemented:
 - **Outcome:** Services run in production, with rollback options in case of failure.
 
 I have created a gitops folder, with sample values.yml files, showing how gitops might be applied to the dev, test, stg and prod environments, here [gitops](./code_snippets/deployment/gitops/)
+
+---
+
+### 6. Testing Approach for the Infrastructure
+
+#### Infrastructure Test
+I focus on three main areas to ensure the infrastructure is reliable and functional:
+
+##### 6.1. Hardware Test with MAAS
+I use MAAS to test the physical servers:
+- cpu
+- memory
+- disks
+
+##### 6.2. Kubernetes Pre-Deployment Test with Ansible
+Before deploying Kubernetes, I run Ansible playbooks to:
+- Validate OS configurations
+- Check Network Connectivity
+- Check that required Ports are Open
+
+##### 6.3. Kubernetes Post-Deployment Test with Ansible
+After deployment, I use Ansible to:
+- Check that required Services are Healthy
+    - containerd
+    - kubelet
+    - rke2-server
+    - rke2-agent
+- Check control plane pods are healthy
+- Check overall cluster health 
