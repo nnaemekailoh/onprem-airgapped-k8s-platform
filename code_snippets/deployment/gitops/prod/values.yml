@@ -1,0 +1,3 @@
+ingress:
+  class: nginx-prod
+  url: prod.example.com

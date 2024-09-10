@@ -223,12 +223,12 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
 **Helm:**  
 I would use **Helm** to package, manage, and deploy Kubernetes applications. 
 Helm simplifies deploying complex microservices by templating Kubernetes manifests and enabling consistent version management. 
-A sample Helm chart has been provided in the code_snippet section.
+A sample Helm chart has been provided in the code_snippet section, here [helm_chart](./code_snippets/deployment/helm/app/)
 
 **ArgoCD:**  
 For continuous deployment, I would leverage **ArgoCD**. 
 It enables GitOps by syncing the Kubernetes cluster with the desired state in a Git repository, automating deployments and ensuring any changes in Git are applied directly to the cluster.
-A sample Argo Application has been provided in the code_snippet section.
+A sample Argo Application has been provided in the code_snippet section, here [argo_application](./code_snippets/deployment/argocd/)
 
 To achieve the requirements of:
 
@@ -243,8 +243,8 @@ The following strategies would be implemented:
    - **CloudnativPG PostgreSQL Operator** manages high availability for the PostgreSQL database.
 
 2. **Scaling:**  
-   - **HPA** scales microservices based on CPU utilization.  
-   - **KEDA** enables event-driven scaling, and can be configured with a wides number of scalers.
+   - **HPA** scales microservices based on CPU and Memory utilization.  
+   - **KEDA** enables event-driven scaling, and can be configured with a wide range of scalers.
 
 3. **Security:**  
    - **Istio** enforces **mTLS** for secure communication between microservices.  

@@ -1,0 +1,38 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: backend-autoscaler
+spec:
+  scaleTargetRef:
+    name: backend
+  minReplicaCount: {{ .Values.backend.keda.scaling.minReplicas }}
+  maxReplicaCount: {{ .Values.backend.keda.scaling.maxReplicas }}
+  triggers:
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: {{ .Values.backend.keda.scaling.cpuThreshold }}
+    - type: memory
+      metadata:
+        type: Utilization
+        value: {{ .Values.backend.keda.scaling.memoryThreshold }}
+
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: frontend-autoscaler
+spec:
+  scaleTargetRef:
+    name: frontend
+  minReplicaCount: {{ .Values.frontend.keda.scaling.minReplicas }}
+  maxReplicaCount: {{ .Values.frontend.keda.scaling.maxReplicas }}
+  triggers:
+    - type: cpu
+      metadata:
+        type: Utilization
+        value: {{ .Values.keda.frontend.scaling.cpuThreshold }}
+    - type: memory
+      metadata:
+        type: Utilization
+        value: {{ .Values.frontend.keda.scaling.memoryThreshold }}

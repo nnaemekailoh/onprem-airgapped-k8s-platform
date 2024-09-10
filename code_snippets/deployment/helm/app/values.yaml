@@ -1,0 +1,69 @@
+global:
+  istio:
+    enabled: true
+  spire:
+    enabled: true
+  imagePullPolicy: IfNotPresent
+
+backend:
+  image: backend-image:tag
+  serviceAccount: backend-sa
+  storage:
+    size: 10Gi
+    class: longhorn
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "250m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  replicas: 3
+  affinity:
+    antiAffinity: true
+  keda:
+    scaling:
+      minReplicas: 3
+      maxReplicas: 12
+      cpuThreshold: 50
+      memoryThreshold: 50
+
+frontend:
+  image: frontend-image:tag
+  serviceAccount: frontend-sa
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "250m"
+  replicas: 2
+  affinity:
+    antiAffinity: true
+  keda:
+    scaling:
+      minReplicas: 2
+      maxReplicas: 10
+      cpuThreshold: 75
+      memoryThreshold: 75
+
+postgresql:
+  image: postgres-image:tag
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "500m"
+    limits:
+      memory: "512Mi"
+      cpu: "1"
+  storage:
+    size: 50Gi
+    class: longhorn-local
+
+ingress:
+  class: nginx
+  secret: tls-secret
+  url: dev.example.com
+  serviceName: frontend
+  servicePort: 80

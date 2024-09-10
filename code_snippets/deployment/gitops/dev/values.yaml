@@ -1,0 +1,4 @@
+
+ingress:
+  class: nginx-dev
+  url: dev.example.com

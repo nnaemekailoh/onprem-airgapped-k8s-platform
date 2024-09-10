@@ -1,0 +1,3 @@
+ingress:
+  class: nginx-test
+  url: test.example.com

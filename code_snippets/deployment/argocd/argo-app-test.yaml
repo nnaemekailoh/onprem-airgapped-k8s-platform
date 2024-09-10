@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-test
+  namespace: argocd
+spec:
+  project: app-test
+  source:
+    repoURL: 'https://github.com/deployment/helm/app.git'
+    targetRevision: HEAD
+    path: deployment/helm/app
+    helm:
+      valueFiles:
+        - ../gitops/test/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: test
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

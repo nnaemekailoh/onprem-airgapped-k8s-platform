@@ -1,0 +1,23 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgresql-cluster
+  labels:
+    app: postgresql
+  annotations:
+    {{- if .Values.global.istio.enabled }}
+    inject.istio.io/templates: "sidecar,spire"
+    {{- end }}
+spec:
+  instances: 1
+  imageName: {{ .Values.postgresql.image }}
+  storage:
+    size: {{ .Values.postgresql.storage.size }}
+    storageClassName: {{ .Values.postgresql.storage.Class }}
+  resources:
+    requests:
+      memory: {{ .Values.postgresql.resources.requests.memory }}
+      cpu: {{ .Values.postgresql.resources.requests.cpu }}
+    limits:
+      memory: {{ .Values.postgresql.resources.limits.memory }}
+      cpu: {{ .Values.postgresql.resources.limits.cpu }}
