@@ -283,19 +283,19 @@ I have created a gitops folder, with sample values.yml files, showing how gitops
 #### Infrastructure Test
 I focus on three main areas to ensure the infrastructure is reliable and functional:
 
-##### 6.1. Hardware Test with MAAS
+#### 6.1. Hardware Test with MAAS
 I use MAAS to test the physical servers:
 - cpu
 - memory
 - disks
 
-##### 6.2. Kubernetes Pre-Deployment Test with Ansible
+#### 6.2. Kubernetes Pre-Deployment Test with Ansible
 Before deploying Kubernetes, I run Ansible playbooks to:
 - Validate OS configurations
 - Check Network Connectivity
 - Check that required Ports are Open
 
-##### 6.3. Kubernetes Post-Deployment Test with Ansible
+#### 6.3. Kubernetes Post-Deployment Test with Ansible
 After deployment, I use Ansible to:
 - Check that required Services are Healthy
     - containerd
@@ -304,3 +304,47 @@ After deployment, I use Ansible to:
     - rke2-agent
 - Check control plane pods are healthy
 - Check overall cluster health 
+
+---
+
+## 7. Monitoring Approach 
+
+I would adopt a wholistic Observability and Monitoring approach for the solution, covering:
+
+- Metrics
+- Logs
+- Traces
+
+#### 7.1. **Metrics with Prometheus Stack**  
+   - **Node metrics**: Monitor CPU, memory, and disk usage to ensure nodes are functioning efficiently.  
+   - **Pod metrics**: Track resource usage and health of individual pods to prevent issues like resource starvation.  
+   - **Application metrics**: Measure application-specific performance indicators to gauge overall health and performance.
+
+#### 7.2. **Logs with Elastic Stack**  
+   - **Node logs**: Collect system logs from nodes to identify hardware or OS-level issues.  
+   - **Pod logs**: Capture logs from pods to debug application-level problems and monitor container behavior.  
+   - **Application logs**: Analyze application logs for error tracking and performance insights.
+
+#### 7.3. **Traces with OpenTelemetry Collector, Jaegar and Elastic APM**  
+   - **Response time**: Measure how long it takes for the application to respond to requests, indicating performance.  
+   - **Latency**: Track delays in processing requests to identify performance bottlenecks.  
+   - **Error rates**: Monitor the frequency of errors to detect and address issues impacting the application's reliability.
+
+#### 7.4. **Monitoring From Outside Kubernetes using Nagios**  
+   - **Node metrics**:  
+     - **CPU**: Track CPU usage to detect over-utilization.  
+     - **Memory**: Monitor memory usage to avoid memory leaks or overuse.  
+     - **Storage**: Ensure there is sufficient disk space to prevent failures.  
+   - **Endpoints**: Check the availability and performance of critical endpoints.
+
+#### 7.5. **Alerting**  
+   - **Critical alerts**: Set up notifications for critical conditions or thresholds to enable prompt response to issues.
+
+#### 7.6. **List of Monitoring Tools**  
+   - **Prometheus stack**: Provides powerful metrics collection and querying capabilities.  
+   - **Elastic Stack (Elastic Operator)**: Offers log management and analysis with Elasticsearch, Logstash, and Kibana.  
+   - **OpenTelemetry Collector**: Collects and exports telemetry data for observability across various components. 
+   - **Elastic APM**: For Application Performance Monitoring 
+   - **Jaegar**: For Traces and Application Performance Monitoring.  
+   - **Kiali**: Provides visualization and monitoring for service meshes to understand service interactions.  
+   - **Nagios**: Monitors infrastructure components from outside Kubernetes, offering comprehensive system checks and alerts.
