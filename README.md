@@ -249,3 +249,29 @@ The following strategies would be implemented:
 3. **Security:**  
    - **Istio** enforces **mTLS** for secure communication between microservices.  
    - **Spire** provides identity management to secure microservice authentication.
+
+---
+
+### 5. Release Lifecycle for the Different Components
+
+#### **5.1. Development**
+- **Purpose:** Write code, build microservices, and run unit tests.
+- **Process:** Use Git for version control. CI pipelines (e.g., Jenkins) run automated tests and build microservices. 
+- **Outcome:** Container image is ready for Testing phase.
+
+#### **5.2. Testing**
+- **Purpose:** Validate functionality, performance, and security.
+- **Process:** Deploy to a test Kubernetes environment with ArgoCD. Run automated integration, performance, and security tests.
+- **Outcome:** Code passes all tests and is ready for Staging phase.
+
+#### **5.3. Staging**
+- **Purpose:** Final validation in a production-like environment.
+- **Process:** ArgoCD deploys to staging. Conduct UAT, load testing, and disaster recovery tests. Validate scaling with KEDA and HPA. Test blue-green/canary deployments.
+- **Outcome:** Approved release candidate ready for Production phase.
+
+#### **5.4. Production**
+- **Purpose:** Deploy services to live environments.
+- **Process:** ArgoCD deploys to production. 
+- **Outcome:** Services run in production, with rollback options in case of failure.
+
+I have created a gitops folder, with sample values.yml files, showing how gitops might be applied to the dev, test, stg and prod environments, here [gitops](./code_snippets/deployment/gitops/)
