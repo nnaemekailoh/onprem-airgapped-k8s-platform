@@ -7,9 +7,14 @@ metadata:
   annotations:
     {{- if .Values.global.istio.enabled }}
     inject.istio.io/templates: "sidecar,spire"
+    traffic.sidecar.istio.io/excludeInboundPorts: "8000,9187"
     {{- end }}
 spec:
-  instances: 1
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  instances: {{ .Values.postgresql.instances }}
   imageName: {{ .Values.postgresql.image }}
   storage:
     size: {{ .Values.postgresql.storage.size }}

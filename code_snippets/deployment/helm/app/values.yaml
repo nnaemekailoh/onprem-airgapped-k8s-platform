@@ -50,6 +50,7 @@ frontend:
 
 postgresql:
   image: postgres-image:tag
+  instances: 3
   resources:
     requests:
       memory: "256Mi"
