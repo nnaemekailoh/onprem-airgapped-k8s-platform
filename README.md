@@ -3,7 +3,6 @@
 From our discussions at the interview, I gather that there is a drive for On-Premise Deployments.
 The following sections will discuss an On-Premise use-case.
 
-
 ---
 
 ### **On-Premise Environment with Physical Servers**
@@ -36,10 +35,10 @@ I would use MAAS to automate the provisioning of physical servers and os deploym
 I would use Ansible to automate configuration management on these servers
 
 **Harbor:**  
-Harbor would act as the on-premises container image registry. 
+Harbor would act as the on-premise container image registry. 
 
 **Git Repository (Bitbucket, GitLab, or Gitea):**  
-The Git repository manages version control for application code, infrastructure scripts, and Helm charts.
+The Git repository would manage version control for application code, infrastructure scripts, and Helm charts.
 
 **Jenkins:**  
 Jenkins Pipeline would be used to stitch the various stages of the Infrastructure deployment together, and enable a Single-Click Installation.
@@ -60,7 +59,7 @@ I would use the Ubuntu Linux Distro because:
 I would use **Kubernetes** as the Orchestration Technology.
 There are a number of On-Premise Kubernetes Distributions to choose from Vanilla K8s, RKE2, OpenShift, Tanzu.
 
-I would choose RKE2 distribution because:
+I would choose **RKE2** distribution because:
 
 - Simplified deployment and management
 - Hardened images  
@@ -89,13 +88,12 @@ I would choose RKE2 distribution because:
 - External Object Storage
 
 
-
 **Network CNI:**  
 Between Flannel, Calico and Cilium. Calico has a good balance of scalability and security.
-But **Cilium** using eBPF has High Performance, Advanced Security and cutting-edge features.
+But **Cilium** using eBPF has the Highest Performance, Advanced Security and cutting-edge features.
 
 **Longhorn:**  
-A cloud-native, distributed block storage solution for creating and managing persistent volumes in Kubernetes.
+A cloud-native, distributed block storage solution for creating and managing highly-available persistent volumes in Kubernetes.
 Longhorn creates a default storage class, which has 2 replicas for redundancy and high-availability.
 
   - **Storage Class for Distributed Applications:**
@@ -125,16 +123,21 @@ Longhorn creates a default storage class, which has 2 replicas for redundancy an
 Exposes microservices to external users securely by managing HTTP and HTTPS traffic.
 
 **Vault:**  
-Manages secrets, storing credentials and sensitive data securely. Configured as a Certificate Authority (CA) to issue TLS certificates
+Manages secrets, storing credentials and sensitive data securely. 
+Would be configured as a Certificate Authority (CA) to issue TLS certificates.
 
 **CertManager:**  
-Automates the management of TLS certificates for secure communication within the cluster. Integrates with Vault as the Issuer for TLS certificates.
+Automates the management and rotation of TLS certificates configured in ingress definitions. 
+Integrates with Vault as the Issuer for TLS certificates.
 
 **Spire:**  
 Handles identity management and the issuance of SPIFFE IDs for microservices.
 
 **Istio:**  
 A service mesh that provides secure and efficient traffic management between microservices.
+
+**Kiali:**  
+Visualizes the service mesh topology, traffic, and performance metrics within Istio.
 
 **CloudNativePG:**  
 A PostgreSQL operator for Kubernetes that automates the deployment and management of PostgreSQL databases.
@@ -153,9 +156,7 @@ Deploys and manages an Elasticsearch cluster for log aggregation and analysis.
 
 **OpenTelemetry Collector:**  
 Collects distributed traces and metrics for monitoring and observability of microservices.
-
-**Kiali:**  
-Visualizes the service mesh topology, traffic, and performance metrics within Istio.
+Traces are key to understanding the end-to-end journey of a request through the system, and to see how much time is spent within each component.
 
 **Velero:**  
 Provides backup and recovery capabilities for Kubernetes workloads.
@@ -179,7 +180,7 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
       - OS Imaging and Deployment
       - REST API access (which I can call from a build tool like Jenkins)
   - **Cloud-init:**  
-    I would leverage Cloud-init for initial server configuration. This would handle network settings and SSH keys on the first boot.
+    I would leverage Cloud-init for the initial server configuration. This would handle network settings and SSH keys on the first boot.
   - **Ansible:**  
     I would use Ansible to automate configuration management tasks across all servers.
 
@@ -188,16 +189,16 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
     I would deploy Kubernetes (RKE2) using an Ansible Role and Playbook.
     I have provided a sample Ansible Role in the code_snippet section of this repo, here [ansible_snippet](./code_snippets/infrastructure/ansible/)
   - **Dynamic Inventory:**  
-    I would creat a Python script for dynamic inventory generation from the MAAS API.
+    I would create a Python script for dynamic inventory generation from the MAAS API.
 
       - Control Plane nodes:
-    I would reserve a certain range of IP's from the DHCP pool for the Kubernetes Control Plane nodes
+    I would reserve a range of IP's from the DHCP pool for the Kubernetes Control Plane nodes. In this case, the first 5 IP's.
       - Worker nodes
     The rest can be used for the Kubernetes Worker nodes.
 
-    I have provided a sample Python Script for Dynamic Invenotry in the code_snippet section of this repo, here [dynamic_inventory_snippet](./code_snippets/infrastructure/ansible/inventory.py)
+    I have provided a sample Python Script for Dynamic Inventory in the code_snippet section of this repo, here [dynamic_inventory_snippet](./code_snippets/infrastructure/ansible/inventory.py)
 
-- **Additional Kubernetes Deployment Components:**
+- **Additional Kubernetes Platform Components:**
   - **Helm Charts and Manifests:**  
     I would use Helm charts and manifests to deploy Additional Kubernetes applications, like Longhorn, Nginx Ingress Controller, etc.
     These would be included as Tasks in the Ansible Role.
