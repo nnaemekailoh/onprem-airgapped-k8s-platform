@@ -6,15 +6,14 @@ pipeline {
     }
 
     stages {
-        stage('MAAS: Provision Servers') {
+        stage('Git Checkout') {
             steps {
                 script {
-                    echo 'Provisioning on-prem servers using MAAS...'
-                    sh '''
-                    # Provision servers using MAAS CLI or API
-                    maas <profile> machine acquire
-                    maas <profile> machine deploy <machine_id>
-                    '''
+                    echo 'Checking out code from Git...'
+                    checkout([$class: 'GitSCM', 
+                        branches: [[name: '*/main']],  // Update the branch if needed
+                        userRemoteConfigs: [[url: 'https://github.com/nnaemekailoh/repo-name.git']]  // Update the repo URL
+                    ])
                 }
             }
         }
@@ -26,6 +25,19 @@ pipeline {
                     sh '''
                     # Run hardware diagnostics using MAAS
                     maas <profile> machine check <machine_id>
+                    '''
+                }
+            }
+        }
+
+        stage('MAAS: Provision Servers') {
+            steps {
+                script {
+                    echo 'Provisioning on-prem servers using MAAS...'
+                    sh '''
+                    # Provision servers using MAAS CLI or API
+                    maas <profile> machine acquire
+                    maas <profile> machine deploy <machine_id>
                     '''
                 }
             }
