@@ -23,14 +23,14 @@ def get_machines():
         print(f"Error: {e}")
         sys.exit(1)
 
-# Function to organize machines into Kubernetes masters, MinIO cluster, and workers
+# Function to organize machines into Kubernetes masters, and workers
 def organize_inventory(machines):
     # Sort machines by their first IP address
     machines = sorted(machines, key=lambda x: x['ip_addresses'][0])
 
     inventory = {
-        "k8s_masters": {"hosts": []},
-        "k8s_workers": {"hosts": []},
+        "master": {"hosts": []},
+        "worker": {"hosts": []},
         "_meta": {"hostvars": {}}
     }
 
@@ -45,25 +45,17 @@ def organize_inventory(machines):
         }
 
         if i < K8S_MASTER_COUNT:
-            inventory['k8s_masters']['hosts'].append(hostname)
+            inventory['masters']['hosts'].append(hostname)
         else:
-            inventory['k8s_workers']['hosts'].append(hostname)
+            inventory['workers']['hosts'].append(hostname)
 
     return inventory
 
 # Main function to output inventory in JSON format
 def main():
-    if len(sys.argv) == 2 and sys.argv[1] == '--list':
         machines = get_machines()
         inventory = organize_inventory(machines)
         print(json.dumps(inventory, indent=2))
-    elif len(sys.argv) == 3 and sys.argv[1] == '--host':
-        machines = get_machines()
-        inventory = organize_inventory(machines)
-        host = sys.argv[2]
-        print(json.dumps(inventory['_meta']['hostvars'].get(host, {}), indent=2))
-    else:
-        print("Usage: maas_simple_inventory.py --list | --host <hostname>")
 
 if __name__ == '__main__':
     main()
