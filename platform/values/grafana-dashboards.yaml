@@ -1,0 +1,10 @@
+
+
+sidecar:
+  label: grafana_dashboard
+  labelValue: "1"
+
+folder:
+  enabled: true
+  annotation: grafana_folder
+  name: "AI Platform"

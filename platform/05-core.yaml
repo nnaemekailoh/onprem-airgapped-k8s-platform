@@ -1,0 +1,162 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 1800
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+
+# Core platform. Long timeout: several of these are slow first-install.
+
+releases:
+  - name: metallb
+    chart: metallb/metallb
+    version: 0.14.5
+    namespace: metallb-system
+    missingFileHandler: Info
+    values:
+      - values/metallb.yaml
+    installed: true
+    labels:
+      stage: core
+      app: metallb
+    # IPAddressPool and L2Advertisement are in extra-resources/metallb-pool.yaml.
+    # They are site-specific and the chart does not create them.
+
+  - name: nginx-ingress-controller
+    chart: ingress-nginx/ingress-nginx
+    version: 4.10.1
+    namespace: nginx-ingress-controller
+    missingFileHandler: Info
+    values:
+      - values/nginx-ingress-controller.yaml
+    installed: true
+    labels:
+      stage: core
+      app: nginx-ingress-controller
+
+  - name: kube-prometheus-stack
+    chart: prometheus-community/kube-prometheus-stack
+    version: 59.1.0
+    namespace: kube-prometheus-stack
+    missingFileHandler: Info
+    values:
+      - values/kube-prometheus-stack.yaml
+    installed: true
+    labels:
+      stage: core
+      app: kube-prometheus-stack
+
+  # Vendored Grafana dashboards for vLLM and DCGM, loaded by the sidecar.
+  - name: grafana-dashboards
+    chart: ./charts/grafana-dashboards
+    namespace: kube-prometheus-stack
+    missingFileHandler: Info
+    values:
+      - values/grafana-dashboards.yaml
+    installed: true
+    needs:
+      - kube-prometheus-stack/kube-prometheus-stack
+    labels:
+      stage: core
+      app: grafana-dashboards
+
+  - name: loki
+    chart: grafana/loki
+    version: 6.6.2
+    namespace: loki
+    missingFileHandler: Info
+    values:
+      - values/loki.yaml
+    installed: true
+    labels:
+      stage: core
+      app: loki
+
+  - name: fluentbit
+    chart: fluentbit/fluentbit
+    version: 3.0.1
+    namespace: fluentbit
+    missingFileHandler: Info
+    values:
+      - values/fluentbit.yaml
+    installed: true
+    labels:
+      stage: system
+      app: fluentbit
+    needs:
+      - loki/loki
+
+  - name: tempo
+    chart: grafana/tempo
+    version: 1.10.1
+    namespace: tempo
+    missingFileHandler: Info
+    values:
+      - values/tempo.yaml
+    installed: true
+    labels:
+      stage: core
+      app: tempo
+
+  - name: otel-collector
+    chart: open-telemetry/opentelemetry-collector
+    version: 0.97.1
+    namespace: opentelemetry
+    missingFileHandler: Info
+    values:
+      - values/otel-collector.yaml
+    installed: true
+    labels:
+      stage: core
+      app: otel-collector
+
+  - name: kyverno
+    chart: kyverno/kyverno
+    version: 3.2.5
+    namespace: kyverno
+    missingFileHandler: Info
+    values:
+      - values/kyverno.yaml
+    installed: true
+    labels:
+      stage: core
+      app: kyverno
+
+  - name: harbor
+    chart: harbor/harbor
+    version: 1.14.2
+    namespace: harbor
+    missingFileHandler: Info
+    values:
+      - values/harbor.yaml
+    installed: false
+    labels:
+      stage: core
+      app: harbor
+
+  - name: minio
+    chart: minio/minio
+    version: 5.2.0
+    namespace: minio
+    missingFileHandler: Info
+    values:
+      - values/minio.yaml
+    installed: false
+    labels:
+      stage: core
+      app: minio
+
+  - name: cnpg
+    chart: cnpg/cloudnative-pg
+    version: 0.21.5
+    namespace: cnpg-system
+    missingFileHandler: Info
+    values:
+      - values/cnpg.yaml
+    installed: true
+    labels:
+      stage: core
+      app: cnpg

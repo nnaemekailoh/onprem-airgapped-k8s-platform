@@ -1,0 +1,42 @@
+credentials:
+  useSecret: true
+  existingSecret: velero-credentials     # from external-secrets
+
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: velero
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: http://minio.minio.svc:9000
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: minio
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.10.0
+    volumeMounts:
+      - {mountPath: /target, name: plugins}
+
+deployNodeAgent: true      # file-level backup of PVs
+
+
+metrics:
+  serviceMonitor:
+    enabled: true
+    namespace: kube-prometheus-stack
+
+extraObjects: []
+
+schedules:
+  daily:
+    schedule: "0 2 * * *"
+    template:
+      ttl: 720h
+      includedNamespaces: ["*"]
+      excludedNamespaces: [kube-system, longhorn-system]

@@ -1,0 +1,82 @@
+
+injector:
+  enabled: false
+  # Use the Vault K8s Image https://github.com/hashicorp/vault-k8s/
+  image:
+    tag: "latest"
+
+  resources:
+      requests:
+        memory: 256Mi
+        cpu: 250m
+      limits:
+        memory: 256Mi
+        cpu: 250m
+
+server:
+  # Use the Enterprise Image
+  image:
+    tag: "1.16.2"
+
+  affinity: {}
+
+  # These Resource Limits are in line with node requirements in the
+  # Vault Reference Architecture for a Small Cluster
+  resources:
+    requests:
+      memory: 8Gi
+      cpu: 2000m
+    limits:
+      memory: 16Gi
+      cpu: 2000m
+
+  # For HA configuration and because we need to manually init the vault,
+  # we need to define custom readiness/liveness Probe settings
+  readinessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
+  livenessProbe:
+    enabled: true
+    path: "/v1/sys/health?standbyok=true"
+    initialDelaySeconds: 60
+  dataStorage:
+  # extraEnvironmentVars is a list of extra environment variables to set with the stateful set. These could be
+  # used to include variables required for auto-unseal.
+  extraEnvironmentVars:
+    # VAULT_CACERT: /vault/userconfig/tls-ca/ca.crt
+
+  # This configures the Vault Statefulset to create a PVC for audit logs.
+  # See https://www.vaultproject.io/docs/audit/index.html to know more
+  auditStorage:
+    enabled: false
+
+  standalone:
+    enabled: false
+
+  # Run Vault in "HA" mode.
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      setNodeId: true
+
+      # config: |
+      #   ui = true
+      #   cluster_name = "vault-integrated-storage"
+      #   listener "tcp" {
+      #     address = "[::]:8200"
+      #     cluster_address = "[::]:8201"
+      #     tls_disable = true
+      #   }
+
+      #   storage "raft" {
+      #     path = "/vault/data"
+      #   }
+
+# Vault UI
+ui:
+  enabled: true
+  serviceType: "NodePort"
+  serviceNodePort: 30002
+  externalPort: 8200

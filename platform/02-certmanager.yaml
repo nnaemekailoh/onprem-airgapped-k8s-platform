@@ -1,0 +1,22 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 300
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+
+releases:
+  - name: cert-manager
+    chart: jetstack/cert-manager
+    version: v1.14.5
+    namespace: cert-manager
+    missingFileHandler: Info
+    values:
+      - values/cert-manager.yaml
+    installed: true
+    labels:
+      stage: cert-manager
+      app: cert-manager

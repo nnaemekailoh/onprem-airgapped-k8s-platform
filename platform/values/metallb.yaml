@@ -1,0 +1,24 @@
+installCRDs: true
+controller:
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  priorityClassName: system-cluster-critical
+  resources: {}
+networkPolicy:
+  allowExternal: true
+  allowExternalEgress: true
+  enabled: true
+  kubeAPIServerPorts:
+  - 6443
+prometheusRule:
+  enabled: true
+speaker:
+  enabled: true
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  priorityClassName: system-cluster-critical
+  resources: {}

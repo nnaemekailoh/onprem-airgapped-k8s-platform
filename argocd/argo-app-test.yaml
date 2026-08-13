@@ -11,7 +11,7 @@ spec:
     path: deployment/helm/app
     helm:
       valueFiles:
-        - ../gitops/test/values.yaml
+        - environments/test/values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: test

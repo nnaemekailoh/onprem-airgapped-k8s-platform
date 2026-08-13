@@ -1,0 +1,75 @@
+helmDefaults:
+  verify: false
+  enableDNS: false
+  devel: false
+  wait: true
+  waitForJobs: true
+  timeout: 300
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+  skipDeps: false
+  skipRefresh: false
+  reuseValues: false
+  deleteWait: false
+  deleteTimeout: 0
+
+# Air-gapped sites: point this at the internal Harbor and push charts there first.
+
+
+repositories:
+  # --- internal chart repository (air-gapped sites use only this) ---
+  # - name: internal
+  #   url: https://harbor.platform.internal/chartrepo/helm
+  #   username: {{ requiredEnv "HELM_REPO_USERNAME" }}
+  #   password: {{ requiredEnv "HELM_REPO_PASSWORD" }}
+  #   skipTLSVerify: true
+
+  # --- upstream (connected sites) ---
+  - name: longhorn
+    url: https://charts.longhorn.io
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: hashicorp
+    url: https://helm.releases.hashicorp.com
+  - name: external-secrets
+    url: https://charts.external-secrets.io
+  - name: metallb
+    url: https://metallb.github.io/metallb
+  - name: ingress-nginx
+    url: https://kubernetes.github.io/ingress-nginx
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: kyverno
+    url: https://kyverno.github.io/kyverno
+  - name: harbor
+    url: https://helm.goharbor.io
+  - name: minio
+    url: https://charts.min.io
+  - name: cnpg
+    url: https://cloudnative-pg.github.io/charts
+  - name: open-telemetry
+    url: https://open-telemetry.github.io/opentelemetry-helm-charts
+  - name: nvidia
+    url: https://helm.ngc.nvidia.com/nvidia
+  - name: nfd
+    url: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+  - name: vmware-tanzu
+    url: https://vmware-tanzu.github.io/helm-charts
+  - name: vllm
+    url: https://vllm-project.github.io/production-stack
+  - name: open-webui
+    url: https://helm.openwebui.com/
+  - name: langflow
+    url: https://langflow-ai.github.io/langflow-helm-charts
+  - name: community-charts
+    url: https://community-charts.github.io/helm-charts
+  - name: argo
+    url: https://argoproj.github.io/argo-helm
+  - name: langfuse
+    url: https://langfuse.github.io/langfuse-k8s

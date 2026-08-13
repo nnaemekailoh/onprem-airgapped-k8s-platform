@@ -1,0 +1,25 @@
+# Traces. Xpin's stack names Tempo explicitly; self-hosted, no egress.
+tempo:
+  retention: 336h              # 14 days. No remote backend, so local retention carries it
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: http://kube-prometheus-stack-prometheus.kube-prometheus-stack.svc:9090/api/v1/write
+
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 200Gi
+
+serviceMonitor:
+  enabled: true
+  namespace: kube-prometheus-stack
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 1Gi

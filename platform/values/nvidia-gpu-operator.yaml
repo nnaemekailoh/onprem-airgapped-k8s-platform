@@ -1,0 +1,62 @@
+daemonsets:
+  annotations: {}
+  labels: {}
+  priorityClassName: system-node-critical
+  tolerations:
+  - effect: NoSchedule
+    key: nvidia.com/gpu
+    operator: Exists
+
+dcgmExporter:
+  enabled: true
+  resources:
+    requests:
+      memory: 360Mi
+  serviceMonitor:
+    enabled: true
+    honorLabels: false
+  env:
+    - name: NVIDIA_RESOURCE_NAMES
+      value: "nvidia.com/gpu,nvidia.com/a100,nvidia.com/a10,nvidia.com/a10g,nvidia.com/v100,nvidia.com/t4,nvidia.com/l4,nvidia.com/l40,nvidia.com/l40s,nvidia.com/h100,nvidia.com/h200,nvidia.com/b300"
+
+devicePlugin:
+  enabled: true
+
+driver:
+  imagePullPolicy: Always
+  usePrecompiled: false  
+  enabled: true
+  startupProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 120
+  version: ""
+  manager:
+    image: k8s-driver-manager
+    imagePullPolicy: Always  
+node-feature-discovery:
+  worker:
+    tolerations:
+    - effect: NoSchedule
+      key: nvidia.com/gpu
+      operator: Exists
+
+validator:
+
+operator:  
+
+toolkit:
+
+mig:
+  strategy: mixed
+
+migManager:
+  enabled: false
+  image: k8s-mig-manager
+  version: v0.8.0-ubuntu20.04
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  env:
+    - name: WITH_REBOOT
+      value: "false"
+  resources: {}

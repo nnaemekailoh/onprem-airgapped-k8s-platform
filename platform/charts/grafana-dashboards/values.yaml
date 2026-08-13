@@ -1,0 +1,12 @@
+# The kube-prometheus-stack Grafana sidecar watches for ConfigMaps carrying this label
+# and loads any JSON inside them as a dashboard. Must match
+# grafana.sidecar.dashboards.label in values/kube-prometheus-stack.yaml.
+sidecar:
+  label: grafana_dashboard
+  labelValue: "1"
+
+# Group them in a Grafana folder rather than dumping them at the root.
+folder:
+  enabled: true
+  annotation: grafana_folder
+  name: "AI Platform"

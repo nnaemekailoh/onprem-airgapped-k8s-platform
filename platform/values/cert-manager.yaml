@@ -1,0 +1,51 @@
+cert-manager:
+  global:
+    nodeSelector: {}
+    tolerations: []
+    topologySpreadConstraints: []
+    affinity: {}
+  logLevel: 2
+  installCRDs: true
+  replicaCount: 2
+  controller:
+    acmesolver:
+      image:
+        debug: false
+    image:
+      debug: false
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 500m
+        memory: 500Mi
+      requests:
+        cpu: 50m
+        memory: 35Mi
+  webhook:
+    image:
+      debug: false
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 200m
+        memory: 50Mi
+      requests:
+        cpu: 50m
+        memory: 20Mi
+  cainjector:
+    image:
+      debug: false
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: cert-manager
+  extraDeploy: []

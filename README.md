@@ -1,8 +1,47 @@
-### DevOps Assignment for a Microservices Architecture Deployment
+# On-Premise & Air-Gapped Kubernetes Platform
 
-From our discussions at the interview, I gather that there is a drive for On-Premise Deployments.
-The following sections will discuss an On-Premise use-case.
+Design and reference implementation for building a GPU cloud on bare metal in an air-gapped site. 
+The scale is what drives the tooling:
+- MAAS handles PXE, imaging and power control, 
+- RKE2 provides the Kubernetes layer, and 
+- an offline artefact pipeline covers air-gapped sites.
 
+The environments this targets are air-gapped, so every component has to install from an internal registry and an internal OS package mirror. That constraint shapes most of the design decisions here.
+
+
+## About this repository
+
+Originally written in 2024 as an interview design exercise. 
+
+Since then I have delivered this pattern in production on GPU clusters, and have extended the repository accordingly.
+
+
+## Layout
+
+```
+.
+├── ansible/                                            RKE2 deployment role
+│   ├── inventory.py                                    dynamic inventory from the MAAS API
+│   ├── inventories/{dev,test,stg,prod}
+│   ├── playbooks/
+│   │   └── deploy-rke2.yml
+│   └── roles/rke2/                                                                                        [run in production]
+│       ├── defaults/                                    role variables
+│       ├── files/                                       install.sh, rke2-canal.conf
+│       ├── handlers/
+│       ├── tasks/                                       main, master1, master2-3, workers
+│       └── templates/                                   kube-vip, node configs, registries.yaml
+├── argocd/                                              GitOps applications                               [designed]
+│   ├── argo-app-{dev,test,stg,prod}.yaml
+│   └── environments/{dev,test,stg,prod}/values.yaml
+├── helm/                                                 application chart                                [designed]
+│   ├── Chart.yaml
+│   ├── values.yaml
+│   └── templates/                                        backend, frontend, ingress, keda, postgresql
+├── jenkins/                                                                                                [designed]
+│   └── Jenkinsfile                                       single-click install pipeline
+├── platform/                                             staged helmfile install                           [run in production]
+```
 ---
 
 ### **On-Premise Environment with Physical Servers**
@@ -187,7 +226,7 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
 - **Kubernetes Deployment (RKE2):**
   - **Ansible Role:**  
     I would deploy Kubernetes (RKE2) using an Ansible Role and Playbook.
-    I have provided a sample Ansible Role in the code_snippet section of this repo, here [ansible_snippet](./code_snippets/infrastructure/ansible/)
+    I have provided a sample Ansible Role in the repo, here [ansible_snippet](./ansible/)
   - **Dynamic Inventory:**  
     I would create a Python script for dynamic inventory generation from the MAAS API.
 
@@ -196,7 +235,7 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
       - Worker nodes
     The rest can be used for the Kubernetes Worker nodes.
 
-    I have provided a sample Python Script for Dynamic Inventory in the code_snippet section of this repo, here [dynamic_inventory_snippet](./code_snippets/infrastructure/ansible/inventory.py)
+    I have provided a sample Python Script for Dynamic Inventory in the repo, here [dynamic_inventory_snippet](./ansible/inventory.py)
 
 - **Additional Kubernetes Platform Components:**
   - **Helm Charts and Manifests:**  
@@ -218,7 +257,7 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
       - **Kubernetes Post-Deployment Test with Ansible:** Confirm the successful deployment of Kubernetes.
       - **Additional Components Deployment with Ansible:** Deploy additional Kubernetes components with Helm charts and Manifests
 
-    I have provided a sample Jenkins Pipeline in the code_snippet section of this repo, here [jenkinsfile](./code_snippets/infrastructure/jenkins/Jenkinsfile)
+    I have provided a sample Jenkins Pipeline in the repo, here [jenkinsfile](./jenkins/Jenkinsfile)
 
 ---
 
@@ -231,12 +270,12 @@ MinIO Cluster is a good option for this, in the absence of an existing solution.
 **Helm:**  
 I would use **Helm** to package, manage, and deploy Kubernetes applications. 
 Helm simplifies deploying complex microservices by templating Kubernetes manifests and enabling consistent version management. 
-A sample Helm chart has been provided in the code_snippet section, here [helm_chart](./code_snippets/deployment/helm/app/)
+A sample Helm chart has been provided in the repo, here [helm_chart](./helm/)
 
 **ArgoCD:**  
 For continuous deployment, I would leverage **ArgoCD**. 
 It enables GitOps by syncing the Kubernetes cluster with the desired state in a Git repository, automating deployments and ensuring any changes in Git are applied directly to the cluster.
-A sample Argo Application has been provided in the code_snippet section, here [argo_application](./code_snippets/deployment/argocd/)
+A sample Argo Application has been provided in the repo, here [argo_application](./argocd/)
 
 To achieve the requirements of:
 
@@ -282,7 +321,7 @@ The following strategies would be implemented:
 - **Process:** ArgoCD deploys to production. 
 - **Outcome:** Services run in production, with rollback options in case of failure.
 
-I have created a gitops folder, with sample values.yml files, showing how gitops might be applied to the dev, test, stg and prod environments, here [gitops](./code_snippets/deployment/gitops/)
+I have created a gitops folder, with sample values.yml files, showing how gitops might be applied to the dev, test, stg and prod environments, here [gitops](./argocd/environments/)
 
 ---
 

@@ -1,0 +1,26 @@
+{{- /*
+One ConfigMap per JSON file in files/. Adding a dashboard means dropping a .json in
+there - no template change needed.
+
+Note on size: a ConfigMap is capped at roughly 1MB. These two are ~42KB and ~18KB, so
+there is room, but a very large exported dashboard can exceed it. If that happens, trim
+unused panels rather than reaching for a different mechanism.
+*/}}
+{{- range $path, $bytes := .Files.Glob "files/*.json" }}
+{{- $name := base $path | trimSuffix ".json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-{{ $name }}
+  labels:
+    {{ $.Values.sidecar.label }}: {{ $.Values.sidecar.labelValue | quote }}
+    app.kubernetes.io/managed-by: helm
+  {{- if $.Values.folder.enabled }}
+  annotations:
+    {{ $.Values.folder.annotation }}: {{ $.Values.folder.name | quote }}
+  {{- end }}
+data:
+  {{ $name }}.json: |
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}

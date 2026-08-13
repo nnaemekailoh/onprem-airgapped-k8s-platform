@@ -1,0 +1,35 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 1800
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+# GPU stage. 
+
+releases:
+  - name: nvidia-gpu-operator
+    chart: nvidia/gpu-operator
+    version: v24.3.0
+    namespace: nvidia-gpu-operator
+    missingFileHandler: Info
+    values:
+      - values/nvidia-gpu-operator.yaml
+    installed: true
+    labels:
+      stage: gpu
+      app: nvidia-gpu-operator
+
+  - name: nvidia-network-operator
+    chart: nvidia/network-operator
+    version: v24.1.0
+    namespace: nvidia-network-operator
+    missingFileHandler: Info
+    values:
+      - values/nvidia-network-operator.yaml
+    installed: true
+    labels:
+      stage: gpu
+      app: nvidia-network-operator

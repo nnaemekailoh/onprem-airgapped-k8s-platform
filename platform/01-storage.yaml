@@ -1,0 +1,23 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 900
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+# Longer timeout: Longhorn brings up a daemonset per node and waits on disk discovery.
+
+releases:
+  - name: longhorn
+    chart: longhorn/longhorn
+    version: 1.6.2
+    namespace: longhorn-system
+    missingFileHandler: Info
+    values:
+      - values/longhorn.yaml
+    installed: true
+    labels:
+      stage: storage
+      app: longhorn

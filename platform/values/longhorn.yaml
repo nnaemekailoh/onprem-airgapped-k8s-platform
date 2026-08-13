@@ -1,0 +1,33 @@
+image:
+  pullPolicy: Always
+longhornManager:
+  tolerations:
+    - key: "nvidia.com/gpu"
+      operator: Exists
+      effect: NoSchedule
+
+defaultSettings:
+  taintToleration: "nvidia.com/gpu:NoSchedule"
+  defaultReplicaCount: 1
+  defaultLonghornStaticStorageClass: "longhorn"
+  storageReservedPercentageForDefaultDisk: 5
+  defaultDataPath: "/var/lib/longhorn"
+  createDefaultDiskLabeledNodes: true
+  deletingConfirmationFlag: false
+  storageOverProvisioningPercentage: 500
+  systemManagedPodsImagePullPolicy: Always
+  disableRevisionCounter: "true"
+persistence:
+  defaultClass: false
+  defaultClassReplicaCount: 1
+  reclaimPolicy: Retain
+  disableRevisionCounter: "true"
+service:
+  ui:
+    type: ClusterIP
+ingress:
+  enabled: false
+networkPolicies:
+  enabled: true
+  type: "rke2"
+extraObjects: []

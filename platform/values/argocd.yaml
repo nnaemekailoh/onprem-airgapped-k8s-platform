@@ -1,0 +1,27 @@
+configs:
+  params:
+    server.insecure: true          # TLS terminated at ingress
+
+server:
+  replicas: 2
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts: [argocd.platform.internal]
+    tls:
+      - secretName: argocd-tls
+        hosts: [argocd.platform.internal]
+
+controller:
+  replicas: 2
+  resources:
+    requests: {cpu: 250m, memory: 1Gi}
+
+repoServer:
+  replicas: 2
+
+redis-ha:
+  enabled: true
+
+# Air-gapped: the repo server needs the internal git host, and any Helm chart
+# referenced by an Application must be in the internal chart repository.

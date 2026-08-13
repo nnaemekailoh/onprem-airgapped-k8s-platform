@@ -1,0 +1,54 @@
+kyverno:                       
+  admissionController:
+    replicas: 3
+  backgroundController:
+    replicas: 3
+    rbac:
+      coreClusterRole:
+        extraResources:
+          - apiGroups:
+              - networking.k8s.io
+            resources:
+              - ingresses
+              - ingressclasses
+              - networkpolicies
+            verbs:
+              - create
+              - update
+              - patch
+              - delete
+          - apiGroups:
+              - rbac.authorization.k8s.io
+            resources:
+              - rolebindings
+              - roles
+            verbs:
+              - create
+              - update
+              - patch
+              - delete
+              - get          
+              - list         
+              - watch        
+          - apiGroups:
+              - ''
+            resources:
+              - configmaps
+              - resourcequotas
+              - limitranges
+            verbs:
+              - create
+              - update
+              - patch
+              - delete    
+  cleanupController:
+    replicas: 3
+  reportsController:
+    replicas: 3
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 100Mi

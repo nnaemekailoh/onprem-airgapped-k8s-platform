@@ -1,0 +1,38 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 300
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+
+bases:
+  - repositories.yaml
+
+helmfiles:
+  - path: 01-storage.yaml
+    selectors:
+      - stage=storage
+  - path: 02-certmanager.yaml
+    selectors:
+      - stage=cert-manager
+  - path: 03-vault.yaml
+    selectors:
+      - stage=vault
+  - path: 04-externalsecrets.yaml
+    selectors:
+      - stage=external-secrets
+  - path: 05-core.yaml
+    selectors:
+      - stage=core
+  - path: 06-gpu.yaml
+    selectors:
+      - stage=gpu
+  - path: 07-gitops.yaml
+    selectors:
+      - stage=gitops
+  - path: 08-velero.yaml
+    selectors:
+      - stage=velero

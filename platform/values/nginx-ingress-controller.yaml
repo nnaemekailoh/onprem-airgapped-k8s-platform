@@ -1,0 +1,54 @@
+serviceAccount:
+  create: true
+  name: "nginx-ingress-controller-sa"      
+ingressClassResource:
+  name: nginx
+  enabled: true
+  default: true
+  controllerValue: k8s.io/ingress-nginx
+publishService:
+  enabled: true
+kind: Deployment
+replicaCount: 3
+updateStrategy:
+  rollingUpdate:
+    maxUnavailable: 1
+  type: RollingUpdate
+revisionHistoryLimit: 5
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - podAffinityTerm:
+        labelSelector:
+          matchExpressions:
+          - key: app.kubernetes.io/name
+            operator: In
+            values:
+            - ingress-nginx
+          - key: app.kubernetes.io/instance
+            operator: In
+            values:
+            - ingress-nginx
+          - key: app.kubernetes.io/component
+            operator: In
+            values:
+            - controller
+        topologyKey: kubernetes.io/hostname
+      weight: 50
+resources:
+  requests:
+    cpu: 1
+    memory: 512Mi
+service:
+  annotations: {}
+  enabled: true
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  loadBalancerIP: ""
+# enabled for wildcard custom ssl default ssl certificate
+# extraArgs:
+#   default-ssl-certificate: "nginx-ingress-controller/wildcard-ingress-tls-cert"
+
+priorityClassName: system-cluster-critical
+
+extraDeploy: []

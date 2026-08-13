@@ -1,0 +1,25 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 600
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+
+# Secret store before its consumers.
+# Vault needs initialising and unsealing after install. 
+
+releases:
+  - name: vault
+    chart: hashicorp/vault
+    version: 0.28.0
+    namespace: vault
+    missingFileHandler: Info
+    values:
+      - values/vault.yaml
+    installed: true
+    labels:
+      stage: vault
+      app: vault

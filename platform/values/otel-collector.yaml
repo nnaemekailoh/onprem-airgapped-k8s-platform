@@ -1,0 +1,69 @@
+# Collector in front of Tempo. Inference runtimes push spans over OTLP; the collector
+# also scrapes Prometheus endpoints, so one pipeline carries both signals.
+mode: deployment
+replicaCount: 2
+
+image:
+  repository: otel/opentelemetry-collector-contrib
+
+presets:
+  kubernetesAttributes:
+    enabled: true
+
+config:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
+  processors:
+    batch:
+      timeout: 5s
+    memory_limiter:
+      check_interval: 5s
+      limit_percentage: 80
+      spike_limit_percentage: 20
+    # Strip prompt and completion text before storage.
+    #
+    # In a regulated environment this is not a preference. Prompt content in a trace
+    # store is an uncontrolled copy of customer data in a system with different
+    # retention and access rules from the one that was approved for it.
+    attributes/scrub:
+      actions:
+        - key: gen_ai.prompt
+          action: delete
+        - key: gen_ai.completion
+          action: delete
+        - key: gen_ai.request.messages
+          action: delete
+
+  exporters:
+    otlp/tempo:
+      endpoint: tempo.tempo.svc:4317
+      tls:
+        insecure: true          # in-cluster; mTLS via the mesh where one is deployed
+
+  service:
+    pipelines:
+      traces:
+        receivers: [otlp]
+        processors: [memory_limiter, batch, attributes/scrub]
+        exporters: [otlp/tempo]
+
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    servicePort: 4317
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    servicePort: 4318
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi

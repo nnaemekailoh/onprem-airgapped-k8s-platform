@@ -1,0 +1,10 @@
+apiVersion: v2
+name: grafana-dashboards
+description: Grafana dashboards for vLLM and NVIDIA DCGM, loaded via the sidecar
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+# Local chart because nobody publishes these dashboards as a chart. The JSON is
+# vendored in files/ rather than pulled from grafana.com at pod start, so this works
+# in an air-gapped cluster and does not break when an upstream URL moves.

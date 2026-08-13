@@ -1,0 +1,53 @@
+prometheus:
+  prometheusSpec:
+    retention: 30d          # no remote write inside an air gap, so local retention carries it
+    retentionSize: 180GB
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests:
+              storage: 200Gi
+    resources:
+      requests: {cpu: 500m, memory: 2Gi}
+    # Pick up ServiceMonitors from every namespace, not just this one.
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    # Tempo's metrics generator writes span-derived RED metrics back here.
+    enableFeatures:
+      - remote-write-receiver
+
+grafana:
+  adminPassword: ""          # set via external-secrets, never here
+  defaultDashboardsEnabled: true
+  persistence:
+    enabled: true
+    storageClassName: longhorn
+    size: 10Gi
+  sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      searchNamespace: ALL
+      # Honour grafana_folder on dashboard ConfigMaps. Both settings are needed - the
+      # annotation alone does nothing without foldersFromFilesStructure.
+      folderAnnotation: grafana_folder
+      provider:
+        foldersFromFilesStructure: true
+
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: [ReadWriteOnce]
+          resources:
+            requests:
+              storage: 10Gi
+
+nodeExporter:
+  enabled: true

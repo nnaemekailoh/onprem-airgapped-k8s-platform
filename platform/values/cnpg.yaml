@@ -1,0 +1,8 @@
+# Operator only. Clusters are declared per application, not here.
+replicaCount: 1
+
+resources:
+  requests: {cpu: 100m, memory: 256Mi}
+
+monitoring:
+  podMonitorEnabled: true

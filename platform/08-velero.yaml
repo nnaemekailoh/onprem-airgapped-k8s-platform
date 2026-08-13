@@ -1,0 +1,25 @@
+helmDefaults:
+  wait: true
+  waitForJobs: true
+  timeout: 600
+  force: false
+  atomic: true
+  cleanupOnFail: true
+  createNamespace: true
+
+
+# Needs object storage
+# Credentials come from external-secrets
+
+releases:
+  - name: velero
+    chart: vmware-tanzu/velero
+    version: 6.6.0
+    namespace: velero
+    missingFileHandler: Info
+    values:
+      - values/velero.yaml
+    installed: true
+    labels:
+      stage: velero
+      app: velero
